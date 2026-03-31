@@ -3,13 +3,13 @@ import { useLocation, Link, useNavigate } from 'react-router-dom';
 import { Filter, ArrowLeft, RefreshCw, Layers } from 'lucide-react';
 import SchemeCard from '../components/SchemeCard';
 import Skeleton from '../components/Skeleton';
-import { mockSchemes } from '../services/api';
+import { mockSchemes } from '../services/Data';
 
 const Results = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const formData = location.state?.formData;
-  
+
   const [loading, setLoading] = useState(true);
   const [schemes, setSchemes] = useState([]);
 
@@ -30,9 +30,9 @@ const Results = () => {
           if (formData.gender === 'Female' && s.tags.includes('Women')) return true;
           if (formData.category === 'SC' || formData.category === 'ST') return true;
           if (formData.occupation === 'Farmer' && s.tags.includes('Agriculture')) return true;
-          return s.tags.includes('General Welfare'); 
+          return s.tags.includes('General Welfare');
         });
-        
+
         // Ensure we always show something in prototype
         setSchemes(matched.length > 0 ? matched : mockSchemes.slice(0, 3));
         setLoading(false);
@@ -45,7 +45,7 @@ const Results = () => {
   return (
     <div className="bg-slate-50 min-h-screen pt-24 pb-20">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        
+
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-10 pb-6 border-b border-slate-200">
           <div>
             <Link to="/check-eligibility" className="text-slate-500 hover:text-blue-600 flex items-center gap-2 font-medium mb-4 transition-colors">
@@ -67,7 +67,7 @@ const Results = () => {
                 <Filter className="w-4 h-4" /> Filter
               </button>
               <button className="flex items-center gap-2 px-4 py-2 bg-slate-900 text-white rounded-lg font-medium hover:bg-slate-800 transition-colors">
-                 Sort by: Deadline
+                Sort by: Deadline
               </button>
             </div>
           )}
@@ -95,7 +95,7 @@ const Results = () => {
             <p className="text-slate-500 max-w-md mx-auto mb-8">
               We couldn't find active schemes exactly matching this specific combination right now. Check back later or adjust your details.
             </p>
-            <Link 
+            <Link
               to="/check-eligibility"
               className="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 text-white font-semibold rounded-xl hover:bg-blue-700 transition"
             >

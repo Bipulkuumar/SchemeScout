@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { getSchemeById } from '../services/api';
+import { getSchemeById } from '../services/Data';
 import { ArrowLeft, ExternalLink, ShieldAlert, CheckCircle2, ChevronRight, FileText } from 'lucide-react';
 import Loader from '../components/Loader';
 
@@ -18,7 +18,7 @@ const SchemeDetails = () => {
   }, [id]);
 
   if (loading) return <div className="min-h-screen pt-32"><Loader message="Loading official details..." /></div>;
-  
+
   if (!scheme) return (
     <div className="min-h-screen pt-32 text-center">
       <h2 className="text-2xl font-bold text-slate-800">Scheme not found</h2>
@@ -28,7 +28,7 @@ const SchemeDetails = () => {
 
   return (
     <div className="bg-slate-50 min-h-screen pt-24 pb-20">
-      
+
       {/* Header Banner */}
       <div className="bg-slate-900 border-b border-slate-800 py-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-5xl mx-auto">
@@ -53,7 +53,7 @@ const SchemeDetails = () => {
 
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 -mt-8">
         <div className="grid lg:grid-cols-3 gap-8 relative items-start">
-          
+
           {/* Main Content */}
           <div className="lg:col-span-2 space-y-8">
             <div className="bg-white p-8 rounded-2xl shadow-sm border border-slate-100">
@@ -106,13 +106,13 @@ const SchemeDetails = () => {
           {/* Sticky Sidebar */}
           <div className="lg:col-span-1 lg:sticky lg:top-24 mt-8 lg:mt-0">
             <div className="bg-white rounded-2xl shadow-xl shadow-slate-200/50 border border-slate-100 p-6">
-              
+
               <div className="pb-6 border-b border-slate-100 mb-6">
                 <span className="block text-sm font-semibold text-slate-500 mb-1">Application Deadline</span>
                 <span className="text-xl font-bold text-slate-900">{scheme.deadline}</span>
               </div>
 
-              <a 
+              <a
                 href={scheme.link}
                 target="_blank"
                 rel="noopener noreferrer"
@@ -120,12 +120,12 @@ const SchemeDetails = () => {
               >
                 Apply on Official Portal <ExternalLink className="w-5 h-5" />
               </a>
-              
+
               <p className="text-xs text-slate-400 text-center flex items-center justify-center gap-1">
                 <ShieldAlert className="w-3 h-3" /> You will be redirected to an external government site.
               </p>
             </div>
-            
+
             <div className="mt-6 bg-blue-50 rounded-2xl border border-blue-100 p-6 flex gap-4">
               <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0 text-blue-600">
                 <FileText className="w-5 h-5" />
