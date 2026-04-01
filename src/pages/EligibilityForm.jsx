@@ -44,7 +44,7 @@ const EligibilityForm = () => {
     return false;
   };
 
-  const states = [
+  const states = [ 
     "Andhra Pradesh", "Assam", "Bihar", "Delhi", "Gujarat", "Haryana", 
     "Karnataka", "Kerala", "Maharashtra", "Punjab", "Rajasthan", "Tamil Nadu", "Uttar Pradesh", "West Bengal"
   ];
@@ -166,7 +166,7 @@ const EligibilityForm = () => {
                     onChange={handleChange}
                     className="w-full px-4 py-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all text-slate-700 bg-white"
                   >
-                    <option value="" disabled>Select income bracket</option>
+                    <option value="" disabled>Select income</option>
                     <option value="below_1L">Below ₹1,00,000</option>
                     <option value="1L_to_2.5L">₹1,00,001 - ₹2,50,000</option>
                     <option value="2.5L_to_5L">₹2,50,001 - ₹5,00,000</option>
