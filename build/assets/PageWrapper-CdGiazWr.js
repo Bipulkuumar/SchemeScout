@@ -1,0 +1,1 @@
+import{n as e,u as t}from"./createLucideIcon-C5DqQxtk.js";var n=t(),r={initial:{opacity:0,y:16},animate:{opacity:1,y:0,transition:{duration:.4,ease:[.25,.46,.45,.94]}},exit:{opacity:0,y:-8,transition:{duration:.2}}},i=({children:t})=>(0,n.jsx)(e.div,{variants:r,initial:`initial`,animate:`animate`,exit:`exit`,children:t});export{i as t};

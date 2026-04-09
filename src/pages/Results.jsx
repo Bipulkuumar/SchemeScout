@@ -1,9 +1,15 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { useLocation, Link, useNavigate } from 'react-router-dom';
-import { Filter, ArrowLeft, RefreshCw, Layers } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { ArrowLeft, Search, Layers, RefreshCw } from 'lucide-react';
 import SchemeCard from '../components/SchemeCard';
 import Skeleton from '../components/Skeleton';
-import { mockSchemes } from '../services/Data';
+import Filters from '../components/Filters';
+import EmptyPage from '../components/EmptyPage';
+import MatchMeter from '../components/MatchMeter';
+import PageWrapper from '../components/PageWrapper';
+import { mockSchemes } from '../services/schemesData';
+import { rankSchemes } from '../services/helpers';
 
 const Results = () => {
   const location = useLocation();
@@ -12,100 +18,159 @@ const Results = () => {
 
   const [loading, setLoading] = useState(true);
   const [schemes, setSchemes] = useState([]);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [activeFilters, setActiveFilters] = useState([]);
+  const [sortBy, setSortBy] = useState('relevance');
 
   useEffect(() => {
-    // If no data, redirect back
     if (!formData) {
       navigate('/check-eligibility');
       return;
     }
 
-    // Simulate API match delay
-    const fetchMatches = () => {
-      setLoading(true);
-      setTimeout(() => {
-        // Very basic mock filtering (in reality handled by backend)
-        const matched = mockSchemes.filter(s => {
-          if (formData.occupation === 'Student' && s.tags.includes('Education')) return true;
-          if (formData.gender === 'Female' && s.tags.includes('Women')) return true;
-          if (formData.category === 'SC' || formData.category === 'ST') return true;
-          if (formData.occupation === 'Farmer' && s.tags.includes('Agriculture')) return true;
-          return s.tags.includes('General Welfare');
-        });
+    setLoading(true);
+    const timer = setTimeout(() => {
+      // Rank schemes by eligibility match
+      const ranked = rankSchemes(mockSchemes, formData);
+      setSchemes(ranked);
+      setLoading(false);
+    }, 1800);
 
-        // Ensure we always show something in prototype
-        setSchemes(matched.length > 0 ? matched : mockSchemes.slice(0, 3));
-        setLoading(false);
-      }, 2000);
-    };
-
-    fetchMatches();
+    return () => clearTimeout(timer);
   }, [formData, navigate]);
 
-  return (
-    <div className="bg-slate-50 min-h-screen pt-24 pb-20">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+  // Filtered + sorted list
+  const displaySchemes = useMemo(() => {
+    let result = [...schemes];
 
-        <div className="flex flex-col md:flex-row md:items-end justify-between mb-10 pb-6 border-b border-slate-200">
-          <div>
-            <Link to="/check-eligibility" className="text-slate-500 hover:text-blue-600 flex items-center gap-2 font-medium mb-4 transition-colors">
-              <ArrowLeft className="w-4 h-4" /> Edit My Profile
-            </Link>
-            <h1 className="text-3xl font-bold text-slate-900">
-              Your Eligible <span className="text-blue-600">Schemes</span>
-            </h1>
-            {!loading && (
-              <p className="text-slate-600 mt-2">
-                We found <span className="font-bold text-slate-800">{schemes.length}</span> schemes matching your criteria.
-              </p>
+    // Search
+    if (searchQuery.trim()) {
+      const q = searchQuery.toLowerCase();
+      result = result.filter(
+        s => s.title.toLowerCase().includes(q) || s.description.toLowerCase().includes(q)
+      );
+    }
+
+    // Category filter
+    if (activeFilters.length > 0) {
+      result = result.filter(s =>
+        s.tags.some(tag => activeFilters.includes(tag))
+      );
+    }
+
+    // Sort
+    if (sortBy === 'deadline') {
+      result.sort((a, b) => {
+        if (a.deadline === 'Ongoing') return 1;
+        if (b.deadline === 'Ongoing') return -1;
+        return new Date(a.deadline) - new Date(b.deadline);
+      });
+    } else if (sortBy === 'name') {
+      result.sort((a, b) => a.title.localeCompare(b.title));
+    }
+    // relevance is default sort (by matchPercent, already sorted)
+
+    return result;
+  }, [schemes, searchQuery, activeFilters, sortBy]);
+
+  // Average match percentage
+  const avgMatch = useMemo(() => {
+    if (schemes.length === 0) return 0;
+    return Math.round(schemes.reduce((sum, s) => sum + (s.matchPercent || 0), 0) / schemes.length);
+  }, [schemes]);
+
+  return (
+    <PageWrapper>
+      <div className="bg-slate-50 min-h-screen pt-24 pb-20">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
+          {/* Header */}
+          <div className="flex flex-col lg:flex-row lg:items-end justify-between mb-8 pb-6 border-b border-slate-200">
+            <div className="flex-1">
+              <Link
+                to="/check-eligibility"
+                className="text-slate-400 hover:text-indigo-600 flex items-center gap-2 font-medium mb-4 transition-colors w-max text-sm"
+              >
+                <ArrowLeft className="w-4 h-4" /> Edit My Profile
+              </Link>
+              <h1 className="text-3xl font-extrabold text-slate-900 mb-2">
+                Your Eligible <span className="gradient-text">Schemes</span>
+              </h1>
+              {!loading && (
+                <p className="text-slate-500">
+                  We found <span className="font-bold text-slate-800">{displaySchemes.length}</span> schemes matching your criteria.
+                </p>
+              )}
+            </div>
+
+            {/* Eligibility meter */}
+            {!loading && schemes.length > 0 && (
+              <motion.div
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.3 }}
+                className="mt-6 lg:mt-0"
+              >
+                <MatchMeter percent={avgMatch} size={100} strokeWidth={8} />
+              </motion.div>
             )}
           </div>
 
-          {!loading && schemes.length > 0 && (
-            <div className="mt-6 md:mt-0 flex gap-3">
-              <button className="flex items-center gap-2 px-4 py-2 border border-slate-300 rounded-lg text-slate-700 font-medium hover:bg-slate-100 transition-colors">
-                <Filter className="w-4 h-4" /> Filter
-              </button>
-              <button className="flex items-center gap-2 px-4 py-2 bg-slate-900 text-white rounded-lg font-medium hover:bg-slate-800 transition-colors">
-                Sort by: Deadline
-              </button>
+          {/* Search + Filters */}
+          {!loading && (
+            <motion.div
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="flex flex-col sm:flex-row gap-4 mb-8"
+            >
+              <div className="relative flex-1 max-w-md">
+                <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder="Search schemes..."
+                  className="w-full pl-10 pr-4 py-2.5 rounded-xl border-2 border-slate-200 bg-white text-sm font-medium outline-none focus:border-indigo-300 focus:ring-2 focus:ring-indigo-500/10 transition-all placeholder:text-slate-400"
+                />
+              </div>
+              <Filters
+                onFilter={setActiveFilters}
+                onSort={setSortBy}
+                activeFilters={activeFilters}
+                activeSort={sortBy}
+              />
+            </motion.div>
+          )}
+
+          {/* Results grid */}
+          {loading ? (
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {[...Array(6)].map((_, i) => <Skeleton key={i} />)}
             </div>
+          ) : displaySchemes.length > 0 ? (
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {displaySchemes.map((scheme, i) => (
+                <SchemeCard
+                  key={scheme.id}
+                  scheme={scheme}
+                  index={i}
+                  matchPercent={scheme.matchPercent}
+                />
+              ))}
+            </div>
+          ) : (
+            <EmptyPage
+              icon={Layers}
+              title="No schemes found"
+              description="We couldn't find schemes matching your current filters. Try adjusting your search or filters."
+              actionLabel="Retry with different details"
+              actionIcon={RefreshCw}
+              onAction={() => navigate('/check-eligibility')}
+            />
           )}
         </div>
-
-        {loading ? (
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            <Skeleton />
-            <Skeleton />
-            <Skeleton />
-            <Skeleton />
-            <Skeleton />
-            <Skeleton />
-          </div>
-        ) : schemes.length > 0 ? (
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {schemes.map((scheme) => (
-              <SchemeCard key={scheme.id} scheme={scheme} />
-            ))}
-          </div>
-        ) : (
-          <div className="text-center py-20 bg-white rounded-3xl border border-slate-100 shadow-sm">
-            <Layers className="w-16 h-16 text-slate-300 mx-auto mb-4" />
-            <h3 className="text-2xl font-bold text-slate-800 mb-2">No exact matches found</h3>
-            <p className="text-slate-500 max-w-md mx-auto mb-8">
-              We couldn't find active schemes exactly matching this specific combination right now. Check back later or adjust your details.
-            </p>
-            <Link
-              to="/check-eligibility"
-              className="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 text-white font-semibold rounded-xl hover:bg-blue-700 transition"
-            >
-              <RefreshCw className="w-4 h-4" /> Retry with different details
-            </Link>
-          </div>
-        )}
-
       </div>
-    </div>
+    </PageWrapper>
   );
 };
 
