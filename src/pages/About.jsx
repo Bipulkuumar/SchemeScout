@@ -20,10 +20,10 @@ const About = () => {
   ];
 
   const team = [
-    { name: 'Bipul Kumar', role: 'Founder & Lead Developer', color: 'from-indigo-400 to-purple-500' },
-    { name: 'Priya Sharma', role: 'UI/UX Designer', color: 'from-pink-400 to-rose-500' },
-    { name: 'Rahul Singh', role: 'Backend Engineer', color: 'from-emerald-400 to-teal-500' },
-    { name: 'Ananya Gupta', role: 'Data Analyst', color: 'from-amber-400 to-orange-500' },
+    { name: 'Bipul Kumar', role: 'Frontend Developer', color: 'from-indigo-400 to-purple-500' },
+    { name: 'Divyam Kumar', role: 'UI/UX Designer', color: 'from-pink-400 to-rose-500' },
+    { name: 'Deepanshu', role: 'Backend Engineer', color: 'from-emerald-400 to-teal-500' },
+    { name: 'Ayush Raja', role: 'Data Analyst', color: 'from-amber-400 to-orange-500' },
   ];
 
   return (
