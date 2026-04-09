@@ -27,48 +27,7 @@ SchemeScout is a web application that helps Indian citizens discover government 
 | **Tailwind CSS 4** | Utility-first styling |
 | **Framer Motion** | Animations & transitions |
 | **React Router 7** | Client-side routing |
-| **Lucide React** | Icon library |
-| **Axios** | HTTP client (API-ready) |
 
----
-
-## 📁 Project Structure
-
-```
-src/
-├── components/       # All reusable UI components
-│   ├── Badge.jsx
-│   ├── Button.jsx
-│   ├── EmptyPage.jsx
-│   ├── Filters.jsx
-│   ├── Footer.jsx
-│   ├── Input.jsx
-│   ├── MatchMeter.jsx
-│   ├── Navbar.jsx
-│   ├── PageWrapper.jsx
-│   ├── SchemeCard.jsx
-│   ├── Select.jsx
-│   ├── Skeleton.jsx
-│   └── Stepper.jsx
-├── pages/            # Route-level page components
-│   ├── About.jsx
-│   ├── CheckEligibility.jsx
-│   ├── Contact.jsx
-│   ├── Home.jsx
-│   ├── Results.jsx
-│   └── SchemeDetail.jsx
-├── services/         # Data, API, and helpers
-│   ├── api.js
-│   ├── constants.js
-│   ├── helpers.js
-│   └── schemesData.js
-├── assets/           # Static assets
-├── App.jsx           # Root component with routing
-├── main.jsx          # Entry point
-└── index.css         # Global styles & design system
-```
-
----
 
 ## 🚀 Getting Started
 
