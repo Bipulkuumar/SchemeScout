@@ -85,7 +85,10 @@ npm run deploy
 
 ## 👨‍💻 Team
 
-- **Bipul Kumar** — Founder & Lead Developer
+- **Bipul Kumar** 
+  **Ayush Raja**
+  **Deepanshu**
+  **Divyam**
 
 ---
 
